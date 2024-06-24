@@ -1,0 +1,114 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+@font-face {
+  font-family: "DS-DIGI";
+  src: url(/fonts/DS-DIGI.TTF);
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #333;
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.calculator {
+  background-color: #45474b;
+  border: 3px solid black;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  display: flex;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.button-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.display {
+  font-family: "DS-DIGI", sans-serif;
+
+  background-color: #f5f7f8;
+  border: 3px solid black;
+  grid-column: span 4;
+  padding: 20px;
+  font-size: 24px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 120px;
+}
+
+#display-previous {
+  font-size: 24px;
+  text-align: right;
+}
+
+#display-current {
+  font-size: 48px;
+  text-align: right;
+}
+
+.btn {
+  padding: 20px;
+  font-size: 18px;
+  text-align: center;
+
+  border: 3px solid black;
+}
+
+.btn.green {
+  background-color: hsl(160, 47%, 40%);
+}
+
+.btn.green:hover {
+  background-color: hsl(160, 47%, 35%);
+}
+
+.btn.green:active {
+  background-color: hsl(160, 47%, 30%);
+}
+
+.btn.yellow {
+  background-color: hsl(50, 91%, 52%);
+}
+
+.btn.yellow:hover {
+  background-color: hsl(50, 91%, 47%);
+}
+
+.btn.yellow:active {
+  background-color: hsl(50, 91%, 42%);
+}
+
+.btn.white {
+  background-color: hsl(200, 18%, 97%);
+}
+
+.btn.white:hover {
+  background-color: hsl(200, 18%, 92%);
+}
+
+.btn.white:active {
+  background-color: hsl(200, 18%, 87%);
+}
+
+#btn-zero {
+  grid-column: span 2;
+}
