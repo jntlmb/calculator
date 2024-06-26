@@ -1,137 +1,161 @@
-// display
+// DOM Elements
 const currentDisplay = document.getElementById("display-current");
 const previousDisplay = document.getElementById("display-previous");
-
-// advanced operations
+const numberButtons = document.querySelectorAll(".num");
+const buttonComma = document.getElementById("btn-comma");
+const operationButtons = document.querySelectorAll(".op");
+const buttonEquals = document.getElementById("btn-equals");
 const buttonAllClear = document.getElementById("btn-ac");
 const buttonPositiveNegative = document.getElementById("btn-posneg");
 const buttonModulo = document.getElementById("btn-modulo");
 
-// basic operations
-const buttonDivide = document.getElementById("btn-divide");
-const buttonMultiply = document.getElementById("btn-multiply");
-const buttonSubtract = document.getElementById("btn-subtract");
-const buttonAdd = document.getElementById("btn-add");
-const buttonEquals = document.getElementById("btn-equals");
-
-const operationButtons = [
-  buttonDivide,
-  buttonMultiply,
-  buttonSubtract,
-  buttonAdd
-];
-
-// numbers
-const buttonComma = document.getElementById("btn-comma");
-
-const buttonZero = document.getElementById("btn-zero");
-const buttonOne = document.getElementById("btn-one");
-const buttonTwo = document.getElementById("btn-two");
-const buttonThree = document.getElementById("btn-three");
-const buttonFour = document.getElementById("btn-four");
-const buttonFive = document.getElementById("btn-five");
-const buttonSix = document.getElementById("btn-six");
-const buttonSeven = document.getElementById("btn-seven");
-const buttonEight = document.getElementById("btn-eight");
-const buttonNine = document.getElementById("btn-nine");
-
-const numberButtons = [
-  buttonZero,
-  buttonOne,
-  buttonTwo,
-  buttonThree,
-  buttonFour,
-  buttonFive,
-  buttonSix,
-  buttonSeven,
-  buttonEight,
-  buttonNine
-];
-
-let currentMode;
-
-const operationObj = {
-  add: 1,
-  subtract: 2,
-  multiply: 3,
-  divide: 4
+// Button mapping
+const buttonTaskIndex = {
+  "btn-add": 1,
+  "btn-subtract": 2,
+  "btn-divide": 3,
+  "btn-multiply": 4
 };
 
-let previousNumber;
-let currentNumberArray = [];
-let currentNumber;
+// Global vaiables
+const defaultValue = 0;
+let currentOperandArray = [];
+let currentOperand = null;
+let previousOperand = null;
+let currentOperator = null;
+let result = null;
+let shouldResetCurrentOperand = false;
 
+// Display functions
+function displayCurrent() {
+  currentDisplay.textContent =
+    currentOperand !== null ? currentOperand : defaultValue;
+}
+function resetDisplayCurrent() {
+  currentDisplay.textContent = defaultValue;
+}
+function displayPrevious() {
+  previousDisplay.textContent = previousOperand !== null ? previousOperand : "";
+}
+function resetDisplayPrevious() {
+  previousDisplay.textContent = "";
+}
+
+function displayZeroDivisionError() {
+  currentDisplay.textContent = "Error";
+}
+
+// Reset functions
+function resetCalculator() {
+  resetOperands();
+  resetDisplayCurrent();
+  resetDisplayPrevious();
+}
+
+function resetOperands() {
+  currentOperandArray = [];
+  currentOperand = null;
+  previousOperand = null;
+  currentOperator = null;
+}
+
+function resetArray() {
+  currentOperandArray = [];
+}
+
+// Mathematical operations
+const add = (a, b) => a + b;
+const subtract = (a, b) => a - b;
+const multiply = (a, b) => a * b;
+const divide = (a, b) => {
+  if (b === 0) {
+    displayZeroDivisionError();
+    return;
+  }
+  return a / b;
+};
+const modulo = (a, b) => a % b;
+
+function resetOnOperation() {
+  previousOperand = currentOperand;
+  resetDisplayCurrent();
+  displayPrevious();
+  resetArray();
+}
+
+function operate(op, a, b) {
+  switch (op) {
+    case 1:
+      result = add(a, b);
+      break;
+    case 2:
+      result = subtract(a, b);
+      break;
+    case 3:
+      result = divide(a, b).toFixed(3);
+      break;
+    case 4:
+      result = multiply(a, b);
+      break;
+  }
+
+  if (result !== null) {
+    currentOperand = result;
+  }
+  shouldResetCurrentOperand = true;
+
+  displayCurrent();
+  resetDisplayPrevious();
+}
+
+// Event listeners
 numberButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const num = button.textContent;
 
-    currentNumberArray.push(num);
-    currentNumber = currentNumberArray.join("");
+    if (shouldResetCurrentOperand) {
+      resetArray();
+      shouldResetCurrentOperand = false;
+    }
+
+    currentOperandArray.push(num);
+    currentOperand = Number(currentOperandArray.join(""));
 
     displayCurrent();
   });
 });
 
-// display
-function displayCurrent() {
-  currentDisplay.textContent = currentNumber;
-}
-
-function resetDisplayCurrent() {
-  currentDisplay.textContent = 0;
-}
-
-function displayPrevious() {
-  previousNumber = currentNumber;
-  previousDisplay.textContent = previousNumber;
-}
-
-function resetDisplayPrevious() {
-  previousDisplay.textContent = "";
-}
-
-// reset calculator
 buttonAllClear.addEventListener("click", () => {
   resetCalculator();
 });
 
-function resetCalculator() {
-  resetArray();
-  currentDisplay.textContent = 0;
-  previousDisplay.textContent = "";
-}
-
-// reset array
-function resetArray() {
-  currentNumberArray = [];
-}
-
-// mathematical operations
-const addNumbers = (a, b) => a + b;
-const subtractNumbers = (a, b) => a - b;
-const multiplyNumbers = (a, b) => a * b;
-const divideNumbers = (a, b) => a / b;
-const moduloNumbers = (a, b) => a % b;
-
-function resetOnOperation() {
-  displayPrevious();
-  resetDisplayCurrent();
-  resetArray();
-}
-
 operationButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
+    if (currentOperand === null) return;
+
     const buttonId = e.target.id;
 
-    let buttonTaskIndex = {
-      "btn-add": operationObj.add,
-      "btn-subtract": operationObj.subtract,
-      "btn-divide": operationObj.divide,
-      "btn-multiply": operationObj.multiply
-    };
+    if (
+      previousOperand !== null &&
+      currentOperator !== null &&
+      !shouldResetCurrentOperand
+    ) {
+      operate(currentOperator, previousOperand, currentOperand);
+    }
 
-    currentMode = buttonTaskIndex[buttonId];
+    currentOperator = buttonTaskIndex[buttonId];
     resetOnOperation();
-    console.log(currentMode);
   });
+});
+
+buttonEquals.addEventListener("click", () => {
+  if (
+    currentOperator === null ||
+    previousOperand === null ||
+    currentOperand === null
+  ) {
+    return;
+  }
+
+  operate(currentOperator, previousOperand, currentOperand);
 });
